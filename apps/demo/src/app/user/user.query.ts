@@ -25,9 +25,8 @@ export const injectCreateUser = () => {
   return injectMutation((client: QueryClient) => ({
     mutationFn: (userCreate: UserCreate) =>
       lastValueFrom(userService.createUser(userCreate)),
-    onSuccess: async () => {
-      await client.invalidateQueries({ queryKey: userKeyFactory.allUsers() });
-      // await user.refetchQueries({ queryKey: userKeyFactory.allusers() });
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: userKeyFactory.allUsers() });
     },
   }));
 };
