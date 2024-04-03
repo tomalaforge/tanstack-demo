@@ -20,9 +20,12 @@
         "styles": ["apps/demo/src/styles.scss"],
         "scripts": [],
         "server": "apps/demo/src/main.server.ts",
-        "prerender": true,
         "ssr": {
           "entry": "apps/demo/server.ts"
+        },
+        "prerender": {
+          "discoverRoutes": false,
+          "routesFile": "apps/demo/routes.txt"
         }
       },
       "configurations": {

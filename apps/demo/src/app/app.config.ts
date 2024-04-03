@@ -6,12 +6,12 @@ import {
   provideAngularQuery,
   QueryClient,
 } from '@tanstack/angular-query-experimental';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideClientHydration(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(),
     provideRouter(appRoutes),
     provideAngularQuery(
       new QueryClient({
@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
             staleTime: 1000 * 60,
           },
         },
-      })
+      }),
     ),
   ],
 };
