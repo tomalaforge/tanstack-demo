@@ -8,7 +8,6 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   imports: [AngularQueryDevtools, RouterLink, RouterOutlet],
   template: `
     <nav>
-      <button class="btn btn-accent" routerLink="/home">Home</button>
       <button class="btn btn-accent" routerLink="/app/users">Users</button>
       <button class="btn btn-accent" routerLink="/app/dashboard">
         Dashboard

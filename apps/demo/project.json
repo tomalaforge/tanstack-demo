@@ -18,15 +18,7 @@
         "inlineStyleLanguage": "scss",
         "assets": ["apps/demo/src/favicon.ico", "apps/demo/src/assets"],
         "styles": ["apps/demo/src/styles.scss"],
-        "scripts": [],
-        "server": "apps/demo/src/main.server.ts",
-        "ssr": {
-          "entry": "apps/demo/server.ts"
-        },
-        "prerender": {
-          "discoverRoutes": false,
-          "routesFile": "apps/demo/routes.txt"
-        }
+        "scripts": []
       },
       "configurations": {
         "production": {
