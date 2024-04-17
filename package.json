@@ -20,6 +20,7 @@
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.0.2",
+    "@ngneat/falso": "^7.2.0",
     "@nx/angular": "18.2.1",
     "@tanstack/angular-query-experimental": "^5.28.13",
     "axios": "^1.6.0",

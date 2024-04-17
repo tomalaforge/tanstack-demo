@@ -1,28 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserCreate } from '../user/user.model';
+import { User, UserCreate, UserUpdate } from '../user/user.model';
+import { incrementalNumber, randFirstName, randNumber } from '@ngneat/falso';
 
 @Injectable()
 export class FakeDBService {
-  private idCount = 2;
+  private factory = incrementalNumber();
 
-  private fakeDB: User[] = [
-    {
-      id: 1,
-      name: 'John Doe',
-      age: 30,
-    },
-    {
-      id: 2,
-      name: 'Jane Doe',
-      age: 25,
-    },
-  ];
+  private generateUser = () => ({
+    id: this.factory(),
+    name: randFirstName(),
+    age: randNumber({ min: 1, max: 100 }),
+  });
+
+  private fakeDB: User[] = Array.from({ length: 90 }, this.generateUser);
 
   create(user: UserCreate) {
-    return this.fakeDB.push({ id: this.idCount++, ...user });
+    return this.fakeDB.push({ id: this.factory(), ...user });
   }
 
   findAll() {
     return this.fakeDB;
+  }
+
+  findUserPerPage(page: number, pageSize: number) {
+    const start = page * pageSize;
+    const end = start + pageSize;
+    return [...this.fakeDB.slice(start, end)];
+  }
+
+  findOne(id: number) {
+    return this.fakeDB.find((user) => user.id === id);
+  }
+
+  update(id: number, user: UserUpdate) {
+    const userIndex = this.fakeDB.findIndex((user) => user.id === id);
+    if (userIndex === -1) {
+      throw new Error('User not found');
+    }
+
+    this.fakeDB[userIndex] = { id, ...this.fakeDB[userIndex], ...user };
+    return this.fakeDB[userIndex];
   }
 }

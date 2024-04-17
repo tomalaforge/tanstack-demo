@@ -16,6 +16,9 @@ import { RouterLink, RouterOutlet } from '@angular/router';
     <router-outlet />
     <angular-query-devtools initialIsOpen />
   `,
+  host: {
+    class: 'block h-screen',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ShellComponent {}
