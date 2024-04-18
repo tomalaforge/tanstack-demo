@@ -7,8 +7,11 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [AngularQueryDevtools, RouterLink, RouterOutlet],
   template: `
-    <nav>
-      <button class="btn btn-accent" routerLink="/app/users">Users</button>
+    <nav class="flex justify-center gap-10 p-4">
+      <button class="btn btn-accent" routerLink="/app/users">Basic</button>
+      <button class="btn btn-accent" routerLink="/app/users-page">
+        Pagination
+      </button>
       <button class="btn btn-accent" routerLink="/app/dashboard">
         Dashboard
       </button>

@@ -1,7 +1,6 @@
 import {
   injectMutation,
   injectQuery,
-  keepPreviousData,
   QueryClient,
 } from '@tanstack/angular-query-experimental';
 import { lastValueFrom } from 'rxjs';
@@ -11,7 +10,6 @@ import { UserCreate, UserUpdate } from './user.model';
 
 export const userKeyFactory = {
   allUsers: () => ['users', 'list'],
-  allUsersForPage: (page: number) => ['users', 'list', page],
   userDetail: (userId: number) => ['users', 'detail', userId],
 };
 
@@ -20,15 +18,6 @@ export const injectUsers = () => {
   return injectQuery(() => ({
     queryKey: userKeyFactory.allUsers(),
     queryFn: () => lastValueFrom(userService.getAllUsers()),
-  }));
-};
-
-export const injectUsersForPage = (page: Signal<number>) => {
-  const userService = inject(UserService);
-  return injectQuery(() => ({
-    queryKey: userKeyFactory.allUsersForPage(page()),
-    queryFn: () => lastValueFrom(userService.getUserForPage(page())),
-    placeholderData: keepPreviousData,
   }));
 };
 

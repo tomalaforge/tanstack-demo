@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User, UserCreate, UserPage, UserUpdate } from './user.model';
+import { User, UserCreate, UserUpdate } from './user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -8,10 +8,6 @@ export class UserService {
 
   getAllUsers() {
     return this.http.get<User[]>('/api/user/list');
-  }
-
-  getUserForPage(page: number) {
-    return this.http.get<UserPage>(`/api/user/page?page=${page}&pageSize=10`);
   }
 
   getUserDetail(userId: number) {

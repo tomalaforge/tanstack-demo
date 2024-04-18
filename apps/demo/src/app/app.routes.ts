@@ -8,6 +8,10 @@ export const appRoutes: Route[] = [
     children: [
       { path: 'users', loadComponent: () => import('./user/user.component') },
       {
+        path: 'users-page',
+        loadComponent: () => import('./pagination/user-pagination.component'),
+      },
+      {
         path: 'users/:userId',
         loadComponent: () => import('./user/user-detail.component'),
       },
