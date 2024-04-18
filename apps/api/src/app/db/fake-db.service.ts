@@ -12,7 +12,7 @@ export class FakeDBService {
     age: randNumber({ min: 1, max: 100 }),
   });
 
-  private fakeDB: User[] = Array.from({ length: 90 }, this.generateUser);
+  private fakeDB: User[] = Array.from({ length: 40 }, this.generateUser);
 
   create(user: UserCreate) {
     return this.fakeDB.push({ id: this.factory(), ...user });

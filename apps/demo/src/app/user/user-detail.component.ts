@@ -1,27 +1,45 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { injectUserDetail } from './user.query';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
+import { UserDetailStore } from './user-detail.store';
 
 @Component({
   selector: 'user-detail',
   standalone: true,
   imports: [],
+  providers: [UserDetailStore],
   template: `
-    @if (userDetailQuery.isLoading()) {
+    <button class="btn mb-4 mx-auto" (click)="history.back()">Back</button>
+    @if (userDetailStore.isLoading()) {
       <div>Loading...</div>
-    } @else if (userDetailQuery.isError()) {
-      <div>Error: {{ userDetailQuery.error() }}</div>
+    } @else if (userDetailStore.isError()) {
+      <div>Error: {{ userDetailStore.error() }}</div>
     } @else {
-      <div>{{ userDetailQuery.data()?.name }}</div>
-      <div>{{ userDetailQuery.data()?.age }}</div>
+      <div>{{ userDetailStore.userDetail()?.name }}</div>
+      <div>{{ userDetailStore.userDetail()?.age }}</div>
     }
   `,
   host: {
-    class: 'block w-full h-screen p-10',
+    class: 'block w-[500px] mx-auto p-10',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class UserDetailComponent {
+  userDetailStore = inject(UserDetailStore);
   userId = input.required<number>();
 
-  userDetailQuery = injectUserDetail(this.userId);
+  constructor() {
+    effect(
+      () => {
+        this.userDetailStore.getUser(this.userId());
+      },
+      { allowSignalWrites: true },
+    );
+  }
+
+  protected readonly history = history;
 }

@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimental';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'shell',
   standalone: true,
-  imports: [AngularQueryDevtools, RouterLink, RouterOutlet],
+  imports: [RouterLink, RouterOutlet],
   template: `
     <nav class="flex justify-center gap-10 p-4">
       <button class="btn btn-accent" routerLink="/app/users">Basic</button>
@@ -17,7 +16,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
       </button>
     </nav>
     <router-outlet />
-    <angular-query-devtools initialIsOpen />
+    <!--    <angular-query-devtools initialIsOpen />-->
   `,
   host: {
     class: 'block h-screen',

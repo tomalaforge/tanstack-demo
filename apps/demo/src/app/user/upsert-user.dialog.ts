@@ -3,12 +3,13 @@ import {
   Component,
   computed,
   effect,
+  inject,
   input,
   output,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { injectCreateUser, injectUpdateUser } from './user.query';
 import { User } from './user.model';
+import { UserStore } from './user.store';
 
 @Component({
   selector: 'upsert-user',
@@ -38,7 +39,7 @@ import { User } from './user.model';
           class="input input-bordered w-full max-w-xs"
         />
         <button class="btn" type="submit">
-          @if (createUser.isPending() || updateUser.isPending()) {
+          @if (userStore.isLoading()) {
             <span class="animate-ping">🔥</span>
           }
           Add User
@@ -49,13 +50,12 @@ import { User } from './user.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertUserComponent {
+  userStore = inject(UserStore);
+
   close = output();
   user = input.required<User | undefined>();
   userId = computed(() => this.user()?.id);
   isEditing = computed(() => this.user() !== undefined);
-
-  createUser = injectCreateUser();
-  updateUser = injectUpdateUser(this.userId);
 
   form = new FormGroup({
     name: new FormControl('', { nonNullable: true }),
@@ -70,7 +70,7 @@ export class UpsertUserComponent {
     });
 
     effect(() => {
-      if (this.createUser.isSuccess() || this.updateUser.isSuccess()) {
+      if (this.userStore.isLoading()) {
         this.close.emit();
         this.form.reset({ name: '', age: 0 });
       }
@@ -81,11 +81,10 @@ export class UpsertUserComponent {
     if (this.form.invalid) {
       return;
     }
-
     if (this.isEditing()) {
-      this.updateUser.mutate(this.form.getRawValue());
+      this.userStore.updateUser(this.userId()!, this.form.getRawValue());
     } else {
-      this.createUser.mutate(this.form.getRawValue());
+      this.userStore.createUser(this.form.getRawValue());
     }
   }
 }

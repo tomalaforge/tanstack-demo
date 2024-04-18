@@ -1,24 +1,31 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { injectUsers } from './user.query';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UpsertUserComponent } from './upsert-user.dialog';
 import { User } from './user.model';
+import { UserStore } from './user.store';
 
 @Component({
   selector: 'user',
   standalone: true,
   imports: [RouterLink, UpsertUserComponent],
+  providers: [UserStore],
   template: `
     <button class="btn mb-4 mx-auto" (click)="upsertUser.showModal()">
       Add User
     </button>
-    @if (queryUsers.isLoading()) {
+    @if (userStore.isLoading()) {
       <div>Loading...</div>
-    } @else if (queryUsers.isError()) {
-      <div>Error: {{ queryUsers.error() }}</div>
+    } @else if (userStore.isError()) {
+      <div>Error: {{ userStore.error() }}</div>
     } @else {
       <ul class="flex flex-col gap-2 max-h-[500px] overflow-scroll border p-2 ">
-        @for (user of queryUsers.data(); track user.id) {
+        @for (user of userStore.users(); track user.id) {
           <div
             class="border p-4 border-base-200 rounded-sm flex items-center justify-between w-full"
           >
@@ -48,10 +55,12 @@ import { User } from './user.model';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class UserComponent {
-  page = signal(0);
-
-  queryUsers = injectUsers();
+export default class UserComponent implements OnInit {
+  userStore = inject(UserStore);
 
   selectedUser = signal<User | undefined>(undefined);
+
+  ngOnInit(): void {
+    this.userStore.init();
+  }
 }
