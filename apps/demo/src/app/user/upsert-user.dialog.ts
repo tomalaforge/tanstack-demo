@@ -8,8 +8,13 @@ import {
   output,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { User } from './user.model';
-import { UserStore } from './user.store';
+import { User, UserCreate, UserUpdate } from './user.model';
+import { UserService } from './user.service';
+import {
+  injectMutation,
+  QueryClient,
+} from '@tanstack/angular-query-experimental';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'upsert-user',
@@ -39,7 +44,7 @@ import { UserStore } from './user.store';
           class="input input-bordered w-full max-w-xs"
         />
         <button class="btn" type="submit">
-          @if (userStore.isLoading()) {
+          @if (userCreateQuery.isPending() || userUpdateQuery.isPending()) {
             <span class="animate-ping">🔥</span>
           }
           Add User
@@ -50,7 +55,26 @@ import { UserStore } from './user.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertUserComponent {
-  userStore = inject(UserStore);
+  private userService = inject(UserService);
+
+  userCreateQuery = injectMutation((client: QueryClient) => ({
+    mutationFn: (user: UserCreate) =>
+      lastValueFrom(this.userService.createUser(user)),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ['users', 'list'] });
+    },
+  }));
+
+  userUpdateQuery = injectMutation((client: QueryClient) => ({
+    mutationFn: ({ userId, user }: { userId: number; user: UserUpdate }) =>
+      lastValueFrom(this.userService.updateUser(userId, user)),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ['users', 'list'] });
+      client.invalidateQueries({
+        queryKey: ['users', 'detail', this.userId()],
+      });
+    },
+  }));
 
   close = output();
   user = input.required<User | undefined>();
@@ -70,7 +94,10 @@ export class UpsertUserComponent {
     });
 
     effect(() => {
-      if (this.userStore.isLoading()) {
+      if (
+        this.userCreateQuery.isSuccess() ||
+        this.userUpdateQuery.isSuccess()
+      ) {
         this.close.emit();
         this.form.reset({ name: '', age: 0 });
       }
@@ -82,9 +109,12 @@ export class UpsertUserComponent {
       return;
     }
     if (this.isEditing()) {
-      this.userStore.updateUser(this.userId()!, this.form.getRawValue());
+      this.userUpdateQuery.mutate({
+        userId: this.userId()!,
+        user: this.form.getRawValue(),
+      });
     } else {
-      this.userStore.createUser(this.form.getRawValue());
+      this.userCreateQuery.mutate(this.form.getRawValue());
     }
   }
 }
