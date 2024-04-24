@@ -8,7 +8,7 @@ import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimen
   selector: 'app-root',
   template: `
     <router-outlet />
-    <!--  <angular-query-devtools initialIsOpen/>-->
+    <angular-query-devtools initialIsOpen />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

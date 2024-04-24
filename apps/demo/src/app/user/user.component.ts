@@ -2,13 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UpsertUserComponent } from './upsert-user.dialog';
 import { User } from './user.model';
 import { UserStore } from './user.store';
+import { UserService } from './user.service';
+import { injectQuery } from '@tanstack/angular-query-experimental';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'user',
@@ -19,13 +21,17 @@ import { UserStore } from './user.store';
     <button class="btn mb-4 mx-auto" (click)="upsertUser.showModal()">
       Add User
     </button>
-    @if (userStore.isLoading()) {
+    @if (usersQuery.isFetching()) {
+      <div>Fetching...</div>
+    }
+
+    @if (usersQuery.isLoading()) {
       <div>Loading...</div>
-    } @else if (userStore.isError()) {
-      <div>Error: {{ userStore.error() }}</div>
+    } @else if (usersQuery.isError()) {
+      <div>Error: {{ usersQuery.error() }}</div>
     } @else {
       <ul class="flex flex-col gap-2 max-h-[500px] overflow-scroll border p-2 ">
-        @for (user of userStore.users(); track user.id) {
+        @for (user of usersQuery.data(); track user.id) {
           <div
             class="border p-4 border-base-200 rounded-sm flex items-center justify-between w-full"
           >
@@ -53,12 +59,13 @@ import { UserStore } from './user.store';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class UserComponent implements OnInit {
-  userStore = inject(UserStore);
+export default class UserComponent {
+  private userService = inject(UserService);
+
+  usersQuery = injectQuery(() => ({
+    queryKey: ['users', 'list'],
+    queryFn: () => lastValueFrom(this.userService.getAllUsers()),
+  }));
 
   selectedUser = signal<User | undefined>(undefined);
-
-  ngOnInit(): void {
-    this.userStore.init();
-  }
 }
