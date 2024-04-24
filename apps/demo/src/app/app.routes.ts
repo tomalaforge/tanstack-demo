@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import DashboardComponent from './dashboard/dashboard.component';
 
 export const appRoutes: Route[] = [
   { path: '', redirectTo: 'app', pathMatch: 'full' },
@@ -17,7 +18,7 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'dashboard',
-        loadComponent: () => import('./dashboard/dashboard.component'),
+        component: DashboardComponent,
       },
     ],
   },

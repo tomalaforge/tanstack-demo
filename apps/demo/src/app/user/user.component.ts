@@ -45,9 +45,7 @@ import { UserStore } from './user.store';
     }
 
     <dialog #upsertUser class="modal">
-      @defer (when upsertUser.open) {
-        <upsert-user (close)="upsertUser.close()" [user]="selectedUser()" />
-      }
+      <upsert-user (close)="upsertUser.close()" [user]="selectedUser()" />
     </dialog>
   `,
   host: {
