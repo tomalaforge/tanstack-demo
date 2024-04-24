@@ -3,18 +3,12 @@ import {
   Component,
   computed,
   effect,
-  inject,
   input,
   output,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { User, UserCreate, UserUpdate } from './user.model';
-import { UserService } from './user.service';
-import {
-  injectMutation,
-  QueryClient,
-} from '@tanstack/angular-query-experimental';
-import { lastValueFrom } from 'rxjs';
+import { User } from './user.model';
+import { injectCreateUser, injectUpdateUser } from './user.query';
 
 @Component({
   selector: 'upsert-user',
@@ -55,31 +49,13 @@ import { lastValueFrom } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertUserComponent {
-  private userService = inject(UserService);
-
-  userCreateQuery = injectMutation((client: QueryClient) => ({
-    mutationFn: (user: UserCreate) =>
-      lastValueFrom(this.userService.createUser(user)),
-    onSuccess: () => {
-      client.invalidateQueries({ queryKey: ['users', 'list'] });
-    },
-  }));
-
-  userUpdateQuery = injectMutation((client: QueryClient) => ({
-    mutationFn: ({ userId, user }: { userId: number; user: UserUpdate }) =>
-      lastValueFrom(this.userService.updateUser(userId, user)),
-    onSuccess: () => {
-      client.invalidateQueries({ queryKey: ['users', 'list'] });
-      client.invalidateQueries({
-        queryKey: ['users', 'detail', this.userId()],
-      });
-    },
-  }));
-
   close = output();
   user = input.required<User | undefined>();
   userId = computed(() => this.user()?.id);
   isEditing = computed(() => this.user() !== undefined);
+
+  userCreateQuery = injectCreateUser();
+  userUpdateQuery = injectUpdateUser(this.userId);
 
   form = new FormGroup({
     name: new FormControl('', { nonNullable: true }),
@@ -109,10 +85,7 @@ export class UpsertUserComponent {
       return;
     }
     if (this.isEditing()) {
-      this.userUpdateQuery.mutate({
-        userId: this.userId()!,
-        user: this.form.getRawValue(),
-      });
+      this.userUpdateQuery.mutate(this.form.getRawValue());
     } else {
       this.userCreateQuery.mutate(this.form.getRawValue());
     }

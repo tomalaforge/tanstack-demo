@@ -1,22 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UpsertUserComponent } from './upsert-user.dialog';
 import { User } from './user.model';
-import { UserStore } from './user.store';
-import { UserService } from './user.service';
-import { injectQuery } from '@tanstack/angular-query-experimental';
-import { lastValueFrom } from 'rxjs';
+import { injectUsers } from './user.query';
 
 @Component({
   selector: 'user',
   standalone: true,
   imports: [RouterLink, UpsertUserComponent],
-  providers: [UserStore],
   template: `
     <button class="btn mb-4 mx-auto" (click)="upsertUser.showModal()">
       Add User
@@ -60,12 +51,7 @@ import { lastValueFrom } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class UserComponent {
-  private userService = inject(UserService);
-
-  usersQuery = injectQuery(() => ({
-    queryKey: ['users', 'list'],
-    queryFn: () => lastValueFrom(this.userService.getAllUsers()),
-  }));
+  usersQuery = injectUsers();
 
   selectedUser = signal<User | undefined>(undefined);
 }
