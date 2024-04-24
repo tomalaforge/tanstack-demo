@@ -48,7 +48,10 @@ export const injectUpdateUser = (userId: Signal<number | undefined>) => {
     enabled: userId() !== undefined,
     onSuccess: () => {
       client.invalidateQueries({
-        queryKey: ['users'],
+        queryKey: userKeyFactory.allUsers(),
+      });
+      client.invalidateQueries({
+        queryKey: userKeyFactory.userDetail(userId()!),
       });
     },
   }));
