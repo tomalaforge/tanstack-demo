@@ -16,6 +16,7 @@ export const appConfig: ApplicationConfig = {
         defaultOptions: {
           queries: {
             staleTime: 1000 * 5,
+            gcTime: 1000 * 10,
           },
         },
       }),
