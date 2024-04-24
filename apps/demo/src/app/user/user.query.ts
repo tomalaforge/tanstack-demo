@@ -8,6 +8,11 @@ import { UserService } from './user.service';
 import { inject, Signal } from '@angular/core';
 import { UserCreate, UserUpdate } from './user.model';
 
+export const userKeyFactory = {
+  allUsers: () => ['users', 'list'],
+  userDetail: (userId: number) => ['users', 'detail', userId],
+};
+
 export const injectUsers = () => {
   const userService = inject(UserService);
   return injectQuery(() => ({
@@ -19,7 +24,7 @@ export const injectUsers = () => {
 export const injectUserDetail = (userId: Signal<number>) => {
   const userService = inject(UserService);
   return injectQuery(() => ({
-    queryKey: ['users', 'detail', userId()],
+    queryKey: userKeyFactory.userDetail(userId()),
     queryFn: () => lastValueFrom(userService.getUserDetail(userId())),
   }));
 };
@@ -30,7 +35,7 @@ export const injectCreateUser = () => {
     mutationFn: (userCreate: UserCreate) =>
       lastValueFrom(userService.createUser(userCreate)),
     onSuccess: () => {
-      client.invalidateQueries({ queryKey: ['users', 'list'] });
+      client.invalidateQueries({ queryKey: userKeyFactory.allUsers() });
     },
   }));
 };
@@ -43,10 +48,10 @@ export const injectUpdateUser = (userId: Signal<number | undefined>) => {
     enabled: userId() !== undefined,
     onSuccess: () => {
       client.invalidateQueries({
-        queryKey: ['users', 'list'],
+        queryKey: userKeyFactory.allUsers(),
       });
       client.invalidateQueries({
-        queryKey: ['users', 'detail', userId()],
+        queryKey: userKeyFactory.userDetail(userId()!),
       });
     },
   }));
