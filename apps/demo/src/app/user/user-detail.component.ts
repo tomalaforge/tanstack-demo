@@ -30,6 +30,7 @@ import { UserDetailStore } from './user-detail.store';
 })
 export default class UserDetailComponent {
   userDetailStore = inject(UserDetailStore);
+  // userService = inject(UserService);
   userId = input.required<number>();
 
   constructor() {

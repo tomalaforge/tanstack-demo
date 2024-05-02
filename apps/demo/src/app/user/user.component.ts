@@ -55,6 +55,7 @@ import { UserStore } from './user.store';
 })
 export default class UserComponent implements OnInit {
   userStore = inject(UserStore);
+  // userService = inject(UserService);
 
   selectedUser = signal<User | undefined>(undefined);
 

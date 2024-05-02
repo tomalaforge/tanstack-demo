@@ -15,7 +15,7 @@ export class FakeDBService {
   private fakeDB: User[] = Array.from({ length: 40 }, this.generateUser);
 
   create(user: UserCreate) {
-    return this.fakeDB.push({ id: this.factory(), ...user });
+    return this.fakeDB.unshift({ id: this.factory(), ...user });
   }
 
   findAll() {
