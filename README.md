@@ -16,3 +16,5 @@ run `nx serve demo` to start the demo server
 
 
 You can now play with the application.
+
+If you want to see tanstack query in action, you can switch to the branch `5-factory-key`.
